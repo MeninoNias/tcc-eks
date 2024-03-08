@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sso-tcc
+  namespace: tcc
+  labels:
+    app: sso-tcc
+spec:
+  selector:
+    matchLabels:
+      app: sso-tcc
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: sso-tcc
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: sso-tcc
+        image: 140790352456.dkr.ecr.us-east-1.amazonaws.com/sso-tcc:latest
+        imagePullPolicy: Always
+        envFrom:
+          - secretRef:
+              name: tcc-secret
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1000M"
+          limits:
+            cpu: "1000m"
+            memory: "2000M"
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /status/
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10

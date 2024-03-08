@@ -1,0 +1,24 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+  metadata:
+    name: tcc-cluster
+    region: us-east-1
+
+vpc:
+  id: "vpc-07b0cb1b5a8412c7e"
+  subnets:
+    public:
+      us-east-1a:
+        id: "subnet-021d87f2efb34db85"
+      us-east-1b:
+        id: "subnet-0aefbc30342c3fdd0"
+
+managedNodeGroups:
+  - name: managed-ng-1
+    minSize: 2
+    maxSize: 4
+    desiredCapacity: 2
+    instanceType: t3a.medium
+    iam:
+      withAddonPolicies:
+        autoScaler: true
